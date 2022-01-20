@@ -26,7 +26,6 @@ login_params = {
 }
 
 
-
 urlpatterns = [
     path('', lambda request: redirect('coffees:index'), name='root'),
     path('login/', LoginView.as_view(**login_params), name='login'),
@@ -35,3 +34,6 @@ urlpatterns = [
     path('coffees/', include('coffees.urls')),
     path('admin/', admin.site.urls),
 ]
+
+handler403 = 'utils.error_handlers.permission_denied'
+handler404 = 'utils.error_handlers.page_not_found'
