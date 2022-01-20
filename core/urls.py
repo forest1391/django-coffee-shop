@@ -15,14 +15,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.shortcuts import redirect
-from django.urls import path, include
+from django.urls import path, include, reverse_lazy
 
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView
 from utils.auth_views import register
 
 login_params = {
     'template_name': 'users/login.html',
     'redirect_authenticated_user': True,
+}
+
+password_reset_params = {
+    'template_name': 'users/password_reset.html',
+    'email_template_name': 'users/password_reset/email.html',
+    'subject_template_name': 'users/password_reset/subject.txt',
+    'success_url': reverse_lazy('login'),
+}
+
+password_set_params = {
+    'template_name': 'users/password_set.html',
+    'post_reset_login': True,
+    'success_url': reverse_lazy('login'),
 }
 
 
@@ -31,6 +44,16 @@ urlpatterns = [
     path('login/', LoginView.as_view(**login_params), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', register, name='register'),
+    path(
+            'password-reset/',
+            PasswordResetView.as_view(**password_reset_params),
+            name='password_reset',
+        ),
+    path(
+            'password-set/<uidb64>/<token>/',
+            PasswordResetConfirmView.as_view(**password_set_params),
+            name='password_set',
+        ),
     path('coffees/', include('coffees.urls')),
     path('admin/', admin.site.urls),
 ]
